@@ -3,6 +3,9 @@ name: Test Project
 on:
     pull_request:
       types: opened
+    push:
+        branches:
+            - dev  
   
 jobs:
   test:
