@@ -12,9 +12,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Navigate to project folder
-        run: cd "02 Starting Project"
-
       - name: Verify package.json exists
         run: |
           if [ ! -f package.json ]; then
@@ -43,9 +40,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Navigate to project folder
-        run: cd "02 Starting Project"
-
       - name: Install dependencies
         run: |
           if [ -f package-lock.json ]; then
@@ -62,15 +56,12 @@ jobs:
         with:
           name: my-artifact
           path: |
-            02 Starting Project/dist
-            02 Starting Project/package.json
+            dist
+            package.json
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Navigate to project folder
-        run: cd "02 Starting Project"
-
       - name: Deploy
         run: echo "Deploying..."
