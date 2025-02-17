@@ -1,50 +1,76 @@
-name: Test Project
+name: Deploy website
 
 on:
-    pull_request:
-      types: opened
-  
+  push:
+    branches:
+      - master
+
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      # Step 1: Check out the code
-      - name: Get Code repository
-        uses: actions/checkout@v4
-      
-      # Step 2: Install Node.js
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18' # Specify a stable Node.js version
-      
-      # Step 3: Install dependencies
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Navigate to project folder
+        run: cd "02 Starting Project"
+
+      - name: Verify package.json exists
+        run: |
+          if [ ! -f package.json ]; then
+            echo "Error: package.json not found!"
+            exit 1
+          fi
+
       - name: Install dependencies
-        run: npm ci
-      
-      # Step 4: Run tests
-      - name: Run tests
-        run: npm test
-        
-  deploy:
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
+
+      - name: Lint code
+        run: npm run lint
+
+      - name: Test code
+        run: npm run test
+
+  build:
     needs: test
     runs-on: ubuntu-latest
     steps:
-        # Step 1: Check out the code
-      - name: Get Code repository
-        uses: actions/checkout@v4
-      
-      # Step 2: Install Node.js
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18' # Specify a stable Node.js version
-      
-      # Step 3: Install dependencies
-      - name: Install dependencies
-        run: npm ci
-      
-      # Step 4: Run tests
-      - name: Run tests
-        run: npm test
+      - name: Checkout code
+        uses: actions/checkout@v3
 
+      - name: Navigate to project folder
+        run: cd "02 Starting Project"
+
+      - name: Install dependencies
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
+
+      - name: Build website
+        run: npm run build
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: my-artifact
+          path: |
+            02 Starting Project/dist
+            02 Starting Project/package.json
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Navigate to project folder
+        run: cd "02 Starting Project"
+
+      - name: Deploy
+        run: echo "Deploying..."
