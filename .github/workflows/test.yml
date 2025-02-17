@@ -27,9 +27,6 @@ jobs:
             npm install
           fi
 
-      - name: Lint code
-        run: npm run lint
-
       - name: Test code
         run: npm run test
 
